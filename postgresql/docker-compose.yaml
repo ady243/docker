@@ -1,7 +1,7 @@
 version: '3'
 services:
   db:
-    build: .
+    image: bass913/postgresql
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pwd
@@ -9,25 +9,27 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
     volumes:
       - pg-data:/var/lib/postgresql/data
+      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+      - ./postgresql.conf:/var/lib/postgresql/data/postgresql.conf
     ports:
       - 5432:5432
 
   adminer:
-    build:
-      context: .
-      dockerfile: adminer.dockerfile
+    image: bass913/adminer
     ports:
       - "8080:8080"
 
-  webserver:
-    build: ./docker
-    ports:
-      - "9000:9000"
-    volumes:
-      - front:/var/www/html
+  composer:
+    image: bass913/composer
+
+  # symfony:
+  #   build:
+  #     context: .
+  #     dockerfile: symfony.dockerfile
+  #   ports:
+  #   - "8000:8000"
 
 volumes:
   pg-data:
-  front:
 
 
