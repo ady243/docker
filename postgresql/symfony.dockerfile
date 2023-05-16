@@ -1,21 +1,36 @@
 FROM alpine:latest
 
-# Installation de PHP et d'autres dépendances nécessaires
-RUN apk add --no-cache php8 php8-cli php8-opcache php8-ctype php8-json php8-mbstring php8-phar php8-xml php8-zip php8-curl php8-intl php8-pdo php8-pdo_mysql php8-tokenizer php8-openssl php8-iconv php8-simplexml php8-dom php8-fileinfo composer
+# Installation des dépendances
+RUN apk add --update --no-cache \
+    ca-certificates \
+    wget \
+    unzip \
+    php8 \
+    php8-phar \
+    php8-json \
+    php8-iconv \
+    php8-dom \
+    php8-ctype \
+    php8-session \
+    php8-mbstring \
+    php8-xml \
+    php8-tokenizer \
+    php8-pdo \
+    php8-pdo_mysql \
+    php8-simplexml \
+    php8-fileinfo \
+    php8-xmlwriter \
+    php8-pecl-apcu \
+    php8-opcache
 
 # Installation de Symfony CLI
-RUN wget https://get.symfony.com/cli/installer -O - | bash && \
-    mv /root/.symfony/bin/symfony /usr/local/bin/symfony
+RUN wget https://get.symfony.com/cli/installer -O - | php -- \
+    --install-dir=/usr/local/bin \
+    --filename=symfony \
+    && chmod +x /usr/local/bin/symfony
 
-# Copie de notre projet Symfony dans le conteneur
-WORKDIR /app
-COPY . /app
+# Copie du script d'entrée
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
-# Installation des dépendances avec Composer
-RUN composer install --no-dev --optimize-autoloader
-
-# Exposition du port 8000 pour accéder à l'application Symfony
-EXPOSE 8000
-
-# Commande pour lancer le serveur web Symfony
-CMD ["symfony", "server:start", "--port=8000", "--no-tls", "--allow-http"]
+# Définition du script d'entrée comme point d'entrée
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

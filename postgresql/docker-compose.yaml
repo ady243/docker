@@ -21,6 +21,7 @@ services:
 
   composer:
     image: bass913/composer
+    
 
   # symfony:
   #   build:
