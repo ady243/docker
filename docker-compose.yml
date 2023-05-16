@@ -8,9 +8,18 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
       POSTGRES_USER: ${POSTGRES_USER:-app}
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
-    
+      - database_data:/var/lib/postgresql/data
+
+  webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:80
+    depends_on:
+      - database
+    volumes:
+      - .:/var/www/html
+
 volumes:
-
   database_data:
-
